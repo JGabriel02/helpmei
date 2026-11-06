@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HelpMEI protótipo do MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
+<style>
+:root{
+  --page:#FAF6E8; --app:#FAF6E8; --surface:#FFFFFF; --field:#FFFFFF;
+  --ink:#15301A; --muted:#5B6B5D; --soft:#5B6B5D; --line:#EAE3CE; --field-line:#D8CFB4;
+  --accent:#FB7945; --on-accent:#15301A; --accent-soft:#FFEBDF; --accent-ink:#15301A;
+  --brand:#28552C; --broto:#99E885; --noite:#15301A;
+  --ok-soft:#E6F7DF; --ok-ink:#28552C; --hero:#28552C; --on-hero:#FFFFFF; --hero-muted:#D3E6CF;
+  --chip-off:#EFE9D6; --disabled:#A7B2A4;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+:root[data-theme="dark"]{
+  --page:#0C1A0E; --app:#102012; --surface:#17301B; --field:#102012;
+    --ink:#EEF4EA; --muted:#A9BBA9; --soft:#93A693; --line:#24432A; --field-line:#33573A;
+    --accent:#FB7945; --on-accent:#15301A; --accent-soft:#3D2418; --accent-ink:#FFB894;
+    --brand:#99E885; --broto:#99E885; --noite:#15301A;
+    --ok-soft:#1C3A20; --ok-ink:#99E885; --hero:#28552C; --on-hero:#FFFFFF; --hero-muted:#C9DCC6;
+    --chip-off:#24432A; --disabled:#4A5E4C;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top, 0px)}
+body{margin:0;background:var(--page);color:var(--ink);font-family:"Nunito Sans","Segoe UI",Arial,sans-serif;min-height:100vh}
+button,input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.stage{max-width:1100px;margin:0 auto;padding:40px 24px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;justify-content:center}
+.intro{flex:1 1 320px;max-width:440px;display:flex;flex-direction:column;gap:18px}
+.logo{font-family:Fredoka,"Nunito Sans",Arial,sans-serif;font-weight:600;letter-spacing:0;color:var(--brand);white-space:nowrap}
+.logo b{color:var(--accent);font-weight:600}
+.logo .li{position:relative;display:inline-block}
+.logo .pin{position:absolute;left:50%;top:-.36em;width:.4em;height:auto;transform:translateX(-50%)}
+.mark{width:56px;height:56px;border-radius:14px;background:var(--hero);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brandrow{display:flex;align-items:center;gap:14px}
+.mark.hm{width:40px;height:40px;border-radius:10px;margin-left:6px;border:1.5px solid rgba(255,255,255,.22)}
+.hdr .mark.hm + .logo{padding-left:2px}
+.intro .logo{font-size:54px;line-height:1.1;padding-top:.2em}
+.intro p{margin:0;font-size:17px;line-height:1.55;color:var(--muted)}
+.intro h1{margin:0;font-size:26px;line-height:1.25;font-family:Fredoka,"Nunito Sans",Arial,sans-serif}
+.switch{display:flex;gap:8px;flex-wrap:wrap}
+.switch button{height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--field-line);background:var(--surface);font-weight:700}
+.switch button[aria-pressed="true"]{background:var(--hero);color:var(--on-hero);border-color:var(--hero)}
+.note{font-size:13px;color:var(--soft);line-height:1.5}
+.phone{position:relative;width:390px;max-width:100%;height:844px;max-height:calc(100vh - 32px);min-height:640px;border-radius:36px;border:10px solid var(--noite);background:var(--app);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 60px -30px rgba(21,48,26,.45)}
+.hdr{height:64px;flex-shrink:0;display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--hero);color:var(--on-hero);border-bottom:1px solid var(--hero)}
+.hdr .logo{color:var(--broto)}
+.hdr .t13,.hdr .t12{color:var(--hero-muted)}
+.hdr .ok{color:var(--broto)}
+.hdr :focus-visible{outline-color:var(--broto)}
+.hdr .logo{font-size:26px;padding-left:6px;flex:1;padding-top:.15em}
+.hdr h2{margin:0;font-size:19px;font-family:Fredoka,"Nunito Sans",Arial,sans-serif;font-weight:600}
+.icon-btn{width:44px;height:44px;border:none;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.dot{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:9px;background:var(--accent);color:var(--noite);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.main > *{flex-shrink:0}
+.main{padding-bottom:76px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:12px;align-items:center}
+.grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.av{border-radius:50%;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.t15{font-size:15px;font-weight:700}
+.t13{font-size:13px;color:var(--muted);line-height:1.45}
+.t12{font-size:12px;color:var(--muted)}
+.ok{font-size:12px;font-weight:600;color:var(--ok-ink);display:inline-flex;align-items:center;gap:4px}
+.hero{background:var(--hero);color:var(--on-hero);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.hero .muted{color:var(--hero-muted);font-size:14px;line-height:1.45}
+.big{font-family:Fredoka,"Nunito Sans",Arial,sans-serif;font-weight:700;font-size:20px}
+.btn{height:48px;border:none;border-radius:12px;background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:700;flex-shrink:0}
+.btn:disabled{background:var(--disabled);cursor:not-allowed}
+.btn-o{height:44px;border:1px solid var(--ink);border-radius:12px;background:var(--surface);font-size:15px;font-weight:700;flex-shrink:0}
+.soft{background:var(--ok-soft);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.soft .lbl{font-size:13px;font-weight:800;color:var(--ok-ink)}
+.okbox{background:var(--ok-soft);color:var(--ok-ink);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.lab{font-size:13px;font-weight:600;color:var(--muted)}
+.input,textarea{width:100%;border:1px solid var(--field-line);border-radius:12px;padding:0 12px;height:46px;background:var(--field);font-size:15px;min-width:0}
+textarea{padding:12px;height:auto;line-height:1.45;resize:none}
+.search{display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--field-line);border-radius:12px;padding:0 12px;height:46px}
+.search input{flex:1;border:none;outline:none;background:transparent;font-size:15px;min-width:0}
+.search:focus-within{outline:3px solid var(--brand);outline-offset:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--field-line);background:var(--surface);font-size:13px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--hero);color:var(--on-hero);border-color:var(--hero)}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:var(--chip-off);border-radius:12px;padding:4px}
+.seg button{height:40px;border:none;border-radius:9px;background:transparent;font-size:14px;font-weight:700}
+.seg button[aria-selected="true"]{background:var(--surface)}
+.status{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
+.bubble{max-width:78%;border-radius:16px;padding:10px 14px;font-size:14px;line-height:1.45}
+.me{align-self:flex-end;background:var(--hero);color:var(--on-hero);border-bottom-right-radius:4px}
+.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chatbar{flex-shrink:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.nav{height:64px;flex-shrink:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.nav button{border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;padding:0 2px;font-weight:700;color:var(--muted)}
+.nav button[aria-current="page"]{color:var(--brand)}
+.star{width:48px;height:48px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;color:var(--disabled)}
+.star.on{color:var(--accent)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kv{display:flex;flex-direction:column;gap:2px}
+.kv span:first-child{font-size:12px;font-weight:600;color:var(--muted)}
+.kv span:last-child{font-size:15px;font-weight:600;line-height:1.4}
+.ph{aspect-ratio:1;border-radius:12px;background:var(--chip-off);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);text-align:center;padding:6px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.link{border:none;background:transparent;color:var(--brand);font-weight:700;text-decoration:underline;height:44px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.steps li{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:14px}
+.steps li:last-child{padding-bottom:0}
+.steps li:not(:last-child)::after{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--line)}
+.steps li.done:not(:last-child)::after{background:var(--ok-ink)}
+.steps .n{width:24px;height:24px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--field-line);background:var(--surface);color:var(--muted)}
+.steps li.done .n{background:var(--ok-ink);border-color:var(--ok-ink);color:var(--surface)}
+.steps li.now .n{border-color:var(--accent);color:var(--ink)}
+.steps b{display:block;font-size:14px}
+.steps small{display:block;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+.fab{position:absolute;right:14px;bottom:78px;height:48px;padding:0 16px 0 12px;border-radius:24px;border:none;background:var(--hero);color:var(--on-hero);display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;box-shadow:0 8px 20px -6px rgba(21,48,26,.5);z-index:5}
+.check{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;border:1px solid var(--line)}
+.check .box{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--field-line);color:transparent}
+.check.on{border-color:var(--ok-ink);background:var(--ok-soft)}
+.check.on .box{background:var(--ok-ink);border-color:var(--ok-ink);color:var(--surface)}
+.badge{align-self:flex-start;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent-ink)}
+details.faq{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px}
+details.faq summary{min-height:48px;display:flex;align-items:center;font-size:14px;font-weight:700;cursor:pointer;list-style:none}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";margin-left:auto;font-size:20px;color:var(--muted)}
+details.faq[open] summary::after{content:"–"}
+details.faq p{margin:0 0 14px;font-size:13px;line-height:1.5;color:var(--muted)}
+.car{position:relative;border-radius:12px;overflow:hidden;background:var(--chip-off)}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:12px}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;scroll-snap-align:start;margin:0;position:relative;height:170px}
+.car-slide svg{width:100%;height:100%;display:block}
+.car-slide figcaption{position:absolute;left:8px;bottom:8px;background:rgba(21,48,26,.82);color:#FFFFFF;font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;max-width:70%}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:22px;border:none;background:rgba(255,255,255,.92);color:#15301A;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(21,48,26,.25)}
+.car-btn.prev{left:6px}.car-btn.next{right:6px}
+.car-dots{position:absolute;right:10px;bottom:12px;display:flex;gap:4px}
+.car-dots span{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.6);transition:width .2s}
+.car-dots span.on{background:#FFFFFF;width:16px}
+.redes{display:flex;gap:6px;flex-wrap:wrap}
+.rede{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px;border-radius:18px;border:1px solid var(--field-line);background:var(--surface);color:var(--ink);text-decoration:none;font-size:12px;font-weight:600}
+.rede:hover{border-color:var(--ink)}
+@media (max-width:520px){
+  .stage{padding:0;gap:0}
+  .intro{display:none}
+  .phone{width:100%;height:100vh;height:100dvh;max-height:none;min-height:0;border:none;border-radius:0;box-shadow:none}
+}
+@media (prefers-reduced-motion:no-preference){.main{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="intro" aria-label="Sobre o protótipo">
+    <div class="brandrow"><span class="mark" aria-hidden="true"><svg width="38" height="38" viewBox="0 0 40 40"><path d="M7 9v22M7 20h14" stroke="#99E885" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M27 21v10" stroke="#FB7945" stroke-width="7" stroke-linecap="round"/><path d="M27 4c-3.3 0-6 2.6-6 5.8 0 4.2 6 9.2 6 9.2s6-5 6-9.2C33 6.6 30.3 4 27 4z" fill="#FB7945"/><circle cx="27" cy="9.7" r="2.2" fill="#FFFFFF"/></svg></span><div class="logo" aria-label="HelpMEI">Help<b>ME<span class="li">ı<svg class="pin" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z" fill="#FB7945"/><circle cx="12" cy="11.4" r="4.4" fill="#FFFFFF"/></svg></span></b></div></div>
+    <h1>MEIs da economia criativa contratando MEIs, do pedido ao combinado em minutos.</h1>
+    <p>Protótipo navegável do MVP. Faça um pedido, veja na hora quem pode atender, converse, feche o combinado e avalie.</p>
+    <div class="switch" role="group" aria-label="Escolher tela">
+      <button type="button" data-a="modo" data-v="app" aria-pressed="true">Usar o app</button>
+      <button type="button" data-a="modo" data-v="cad" aria-pressed="false">Ver cadastro por CNPJ</button>
+    </div>
+    <p class="note">Hackathon Negócios em Transformação · Grupo 2. Pessoas, valores e avaliações são fictícios.</p>
+  </section>
+  <div class="phone" id="phone" aria-live="polite"></div>
+</div>
+
+<script>
+(function(){
+  var I = {
+    back:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>',
+    bell:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    search:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    shield:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+    chat:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></svg>',
+    spark:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg>',
+    chev:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+    mic:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/></svg>',
+    send:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>',
+    check:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    star:'<svg width="34" height="34" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>',
+    ig:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>',
+    wa:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/><path d="M9 9.5c.5 2 2.5 4 4.5 4.5"/></svg>',
+    tt:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.5 2.5 4.5 5 5"/></svg>',
+    be:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-4 4 3 3-2 6 4"/><circle cx="16" cy="9" r="1.5"/></svg>',
+    prev:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>',
+    next:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+    feed:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>',
+    help:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.5 9a2.5 2.5 0 0 1 4.9.8c0 1.7-2.4 2.2-2.4 3.7"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>',
+    heart:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 22l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    home:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg>',
+    list:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    msg:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></svg>',
+    user:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+    qr:'<svg width="84" height="84" viewBox="0 0 21 21" role="img" aria-label="QR code do perfil (ilustrativo)" style="flex-shrink:0;border-radius:6px"><rect width="21" height="21" fill="#FFFFFF"/><path fill="#15301A" d="M0 0h7v7H0zM1 1v5h5V1zM2 2h3v3H2zM14 0h7v7h-7zM15 1v5h5V1zM16 2h3v3h-3zM0 14h7v7H0zM1 15v5h5v-5zM2 16h3v3H2zM8 0h2v2H8zM11 1h2v3h-2zM8 3h2v2H8zM9 6h3v2H9zM8 9h2v3H8zM11 9h3v2h-3zM15 8h2v2h-2zM18 9h3v2h-3zM14 12h2v2h-2zM17 12h3v2h-3zM8 13h3v2H8zM12 15h2v3h-2zM15 15h2v2h-2zM18 16h3v2h-3zM9 17h2v4H9zM15 19h4v2h-4zM0 8h2v2H0zM3 9h3v2H3zM1 12h3v1H1z"/></svg>'
+  };
+
+  var MEIS = [
+    {id:'lucas',nome:'Lucas Foto e Vídeo',primeiro:'Lucas',ini:'LF',cor:'#1D4ED8',area:'Fotografia de moda',bairro:'Petrópolis',dist:2.8,nota:4.8,num:550,chaves:'foto fotografia fotografo ensaio catalogo video moda produto',msg:'Faço o ensaio em estúdio com 30 fotos tratadas. Já fotografei duas marcas autorais do bairro.'},
+    {id:'marina',nome:'Marina Retratos',primeiro:'Marina',ini:'MR',cor:'#0F766E',area:'Fotografia e direção de arte',bairro:'Sarandi',dist:1.4,nota:4.9,num:620,chaves:'foto fotografia fotografo ensaio retrato direcao de arte moda catalogo',msg:'Levo fundo e iluminação, e ajudo na direção de arte para o ensaio conversar com a coleção.'},
+    {id:'lente',nome:'Estúdio Lente Sul',primeiro:'Rafa',ini:'LS',cor:'#7C3AED',area:'Estúdio e fotografia',bairro:'Centro Histórico',dist:4.9,nota:4.6,num:480,chaves:'foto fotografia fotografo ensaio estudio espaco fundo infinito catalogo',msg:'Estúdio com fundo infinito e fotógrafo incluso. Você traz as peças e a modelo.'},
+    {id:'bruna',nome:'Bruna Martins Social Media',primeiro:'Bruna',ini:'BM',cor:'#B45309',area:'Social media',bairro:'Sarandi',dist:1.2,nota:4.9,num:320,chaves:'social media instagram posts redes conteudo stories marketing',msg:'Cuido do Instagram de marcas autorais: planejamento, posts com arte e stories.'},
+    {id:'caio',nome:'Caio Ilustra',primeiro:'Caio',ini:'CI',cor:'#BE185D',area:'Ilustração e estampas',bairro:'Petrópolis',dist:3.1,nota:5.0,num:400,chaves:'ilustracao ilustrador estampa desenho arte quadrinho',msg:'Crio estampas e ilustrações exclusivas, com arquivo pronto para impressão.'},
+    {id:'traco',nome:'Studio Traço Design',primeiro:'Lia',ini:'ST',cor:'#047857',area:'Identidade visual',bairro:'Sarandi',dist:2.0,nota:4.7,num:900,chaves:'logo logotipo identidade visual design marca designer grafico',msg:'Faço logo, paleta e manual simples da marca, pensado para pequenos negócios criativos.'},
+    {id:'kraft',nome:'Ateliê Kraft',primeiro:'Bea',ini:'AK',cor:'#9A3412',area:'Embalagens e etiquetas',bairro:'Sarandi',dist:0.9,nota:5.0,num:300,chaves:'embalagem embalagens etiqueta tag caixa sacola papel kraft',msg:'Embalagens e etiquetas personalizadas em papel kraft, em pequenas tiragens.'},
+    {id:'joana',nome:'Joana Modelagem',primeiro:'Joana',ini:'JM',cor:'#4338CA',area:'Modelagem e costura',bairro:'Petrópolis',dist:3.6,nota:4.8,num:250,chaves:'modelagem costura costureira molde piloto roupa',msg:'Desenvolvo modelagem e peça piloto para coleções pequenas.'}
+  ];
+  var EXTRA = {
+    lucas:{fotos:[['retrato','Ensaio da coleção Outono'],['moda','Catálogo de moda autoral'],['estudio','Bastidores no estúdio']],ig:'@lucasfotoevideo',x:['tt','TikTok','https://www.tiktok.com/']},
+    marina:{fotos:[['retrato','Ensaio editorial'],['moda','Direção de arte para coleção'],['retrato','Retrato de marca']],ig:'@marinaretratos.poa',x:['be','Behance','https://www.behance.net/']},
+    lente:{fotos:[['estudio','Fundo infinito'],['retrato','Ensaio em estúdio'],['moda','Still de produto']],ig:'@estudiolentesul',x:null},
+    bruna:{fotos:[['post','Feed de marca autoral'],['post','Calendário de conteúdo'],['retrato','Gravação de reels']],ig:'@brunasocial.media',x:['tt','TikTok','https://www.tiktok.com/']},
+    caio:{fotos:[['estampa','Estampa Folhagem'],['estampa','Coleção Cerrado'],['post','Ilustração para capa']],ig:'@caioilustra',x:['be','Behance','https://www.behance.net/']},
+    traco:{fotos:[['logo','Identidade de cafeteria'],['logo','Marca de ateliê'],['embalagem','Aplicação em embalagem']],ig:'@studiotraco',x:['be','Behance','https://www.behance.net/']},
+    kraft:{fotos:[['embalagem','Caixas personalizadas'],['embalagem','Tags e etiquetas'],['logo','Carimbo da marca']],ig:'@atelie.kraft',x:null},
+    joana:{fotos:[['costura','Peça piloto'],['moda','Coleção pequena'],['costura','Ajuste de modelagem']],ig:'@joanamodelagem',x:null}
+  };
+  var NAV = {lucas:31,marina:47,lente:18,bruna:52,caio:26,traco:14,kraft:38,joana:21};
+  MEIS.forEach(function(m){ var e = EXTRA[m.id]; m.fotos = e.fotos; m.ig = e.ig; m.x = e.x; m.qtd = NAV[m.id]; });
+  // Perfil da pessoa logada: troque os dados abaixo pelos dados reais
+  var EU = { pessoa: '', negocio: 'Mari Santos Bordados e Acessórios', ig: '@esculturas_bordados__joias', igUrl: 'https://www.instagram.com/esculturas_bordados__joias/' };
+  var FOTOS = {"pulseira": "img/pulseira.jpg", "colar": "img/colar.jpg", "colecao": "img/colecao.jpg"};
+  var ANA = {id:'eu',nome:EU.negocio,cor:'#28552C',fotos:[['foto','Pulseira de elos coloridos','pulseira'],['foto','Colar de elos em verde e rosa','colar'],['foto','Coleção de colares','colecao']],ig:EU.ig,igUrl:EU.igUrl,x:null};
+  function iniciais(t){ return t.replace(/[^A-Za-zÀ-ú ]/g,'').split(' ').filter(Boolean).slice(0,2).map(function(w){ return w[0].toUpperCase(); }).join('') || 'EU'; }
+  var byId = {}; MEIS.forEach(function(m){ byId[m.id] = m; });
+
+  var S = {
+    modo:'app', screen:'home', chosen:'lucas', from:'propostas', extra:false, ok:false, rating:0, toast:false,
+    q:'', desc:'Fotógrafo para ensaio da nova coleção de moda autoral: 15 peças, com modelo, fotos para o catálogo.',
+    pedTab:'meus', etapa:0, curtidas:{}, propOk:false, pro:false, ord:'nota', cad:1, semCnpj:false
+  };
+
+  function esc(t){ return String(t).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function norm(t){ return (t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  function br(n){ return n.toFixed(1).replace('.', ','); }
+  function rs(n){ return 'R$ ' + n.toLocaleString('pt-BR'); }
+  function mix(hex, w, amt){
+    var a = parseInt(hex.slice(1),16), b = parseInt(w.slice(1),16);
+    var r = Math.round(((a>>16)&255)*(1-amt)+((b>>16)&255)*amt), g = Math.round(((a>>8)&255)*(1-amt)+((b>>8)&255)*amt), bl = Math.round((a&255)*(1-amt)+(b&255)*amt);
+    return '#'+((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1);
+  }
+  function art(kind, c, i){
+    var bg = mix(c,'#FFFFFF',[0.84,0.74,0.9][i%3]), mid = mix(c,'#FFFFFF',0.45), dark = mix(c,'#000000',0.35), light = mix(c,'#FFFFFF',0.95);
+    var skin = ['#E2B48C','#A86F4C','#7A4A2E'][i%3];
+    var s = '<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="200" fill="'+bg+'"/>';
+    if (kind === 'retrato') {
+      s += '<circle cx="'+(i%2?90:235)+'" cy="66" r="48" fill="'+light+'"/><rect y="152" width="320" height="48" fill="'+mid+'" opacity=".4"/>'+
+        '<ellipse cx="160" cy="214" rx="74" ry="76" fill="'+c+'"/><rect x="148" y="106" width="24" height="26" fill="'+skin+'"/>'+
+        '<circle cx="160" cy="86" r="30" fill="'+skin+'"/><path d="M128 88c0-22 14-34 32-34s32 12 32 34c-6-10-18-16-32-16s-26 6-32 16z" fill="'+dark+'"/>';
+    } else if (kind === 'moda') {
+      s += '<rect x="30" y="34" width="260" height="5" rx="2" fill="'+dark+'"/>';
+      [c, mid, dark].forEach(function(col, j){ var x = 90 + 70*j; s += '<path d="M'+x+' 39v12" stroke="'+dark+'" stroke-width="3"/><path d="M'+(x-16)+' 55h32l'+(12+j*3)+' 120h-'+(56+j*6)+'z" fill="'+col+'"/>'; });
+      s += '<rect y="182" width="320" height="18" fill="'+mid+'" opacity=".35"/>';
+    } else if (kind === 'estudio') {
+      s += '<path d="M70 18h180v120q0 38 50 44H20q50-6 50-44z" fill="'+light+'"/>'+
+        '<rect x="14" y="30" width="40" height="54" rx="4" fill="#FFFFFF" stroke="'+dark+'" stroke-width="2"/><path d="M34 84v90M22 174l12-14 12 14" stroke="'+dark+'" stroke-width="2" fill="none"/>'+
+        '<rect x="266" y="30" width="40" height="54" rx="4" fill="#FFFFFF" stroke="'+dark+'" stroke-width="2"/><path d="M286 84v90M274 174l12-14 12 14" stroke="'+dark+'" stroke-width="2" fill="none"/>'+
+        '<circle cx="160" cy="120" r="16" fill="'+c+'"/><rect x="140" y="136" width="40" height="40" rx="8" fill="'+c+'"/>';
+    } else if (kind === 'estampa') {
+      for (var r = 0; r < 5; r++) for (var k = 0; k < 7; k++) {
+        var x = 18 + 48*k + (r%2)*24, y = 18 + 44*r, col = [c, dark, mid][(r+k+i)%3];
+        s += '<ellipse cx="'+x+'" cy="'+y+'" rx="15" ry="6" transform="rotate('+((r*35+k*20+i*15)%180)+' '+x+' '+y+')" fill="'+col+'"/><circle cx="'+(x+18)+'" cy="'+(y+16)+'" r="3" fill="'+dark+'"/>';
+      }
+    } else if (kind === 'post') {
+      s += '<rect x="102" y="8" width="116" height="200" rx="16" fill="#FFFFFF" stroke="'+dark+'" stroke-width="3"/><rect x="114" y="22" width="40" height="8" rx="4" fill="'+mid+'"/>';
+      for (var q = 0; q < 9; q++) { s += '<rect x="'+(112 + 33*(q%3))+'" y="'+(40 + 33*Math.floor(q/3))+'" width="30" height="30" rx="3" fill="'+[c, mid, dark, light][(q+i)%4]+'"/>'; }
+    } else if (kind === 'logo') {
+      s += '<circle cx="'+(i%2?150:130)+'" cy="92" r="48" fill="'+c+'"/><rect x="'+(i%2?150:140)+'" y="52" width="80" height="80" rx="'+(i%2?40:6)+'" fill="'+dark+'" opacity=".85"/>'+
+        '<rect x="95" y="160" width="130" height="10" rx="5" fill="'+dark+'"/><rect x="125" y="178" width="70" height="6" rx="3" fill="'+mid+'"/>';
+    } else if (kind === 'embalagem') {
+      s += '<rect y="168" width="320" height="32" fill="'+mid+'" opacity=".4"/><rect x="54" y="78" width="112" height="94" rx="4" fill="#C9A27A"/><rect x="54" y="112" width="112" height="16" fill="'+c+'"/>'+
+        '<rect x="176" y="104" width="86" height="68" rx="4" fill="#B88B5E"/><path d="M219 104v68" stroke="'+dark+'" stroke-width="4"/>'+
+        '<path d="M250 60l26 10-10 26-26-10z" fill="#FFFFFF" stroke="'+dark+'" stroke-width="2"/><circle cx="256" cy="70" r="3" fill="'+dark+'"/><path d="M256 70q-20 10-37 34" stroke="'+dark+'" stroke-width="1.5" fill="none"/>';
+    } else {
+      s += '<path d="M160 190v-40" stroke="'+dark+'" stroke-width="5"/><path d="M130 196h60" stroke="'+dark+'" stroke-width="5" stroke-linecap="round"/>'+
+        '<path d="M128 34q32-14 64 0l10 46q-6 34-16 70h-52q-10-36-16-70z" fill="'+c+'"/><path d="M128 34q32-14 64 0" stroke="'+dark+'" stroke-width="3" fill="none"/>'+
+        '<path d="M126 70q34 16 70 0" stroke="#F2C94C" stroke-width="5" fill="none"/>';
+      for (var t = 0; t < 8; t++) s += '<path d="M'+(132+8*t)+' '+(74+ (t<4?t*2:(7-t)*2))+'v6" stroke="'+dark+'" stroke-width="1.5"/>';
+    }
+    return s + '</svg>';
+  }
+  function carrossel(m, alta){
+    var n = m.fotos.length;
+    return '<div class="car"><div class="car-track" role="region" tabindex="0" aria-label="Fotos de '+esc(m.nome)+'">'+m.fotos.map(function(f, i){
+      var media = f[0] === 'foto' ? '<img src="'+FOTOS[f[2]]+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block">' : art(f[0], m.cor, i);
+      return '<figure class="car-slide"'+(alta?' style="height:320px"':'')+' aria-label="Foto '+(i+1)+' de '+n+': '+esc(f[1])+'">'+media+'<figcaption>'+esc(f[1])+'</figcaption></figure>';
+    }).join('')+'</div>'+
+    '<button type="button" class="car-btn prev" data-a="car" data-v="-1" aria-label="Foto anterior">'+I.prev+'</button>'+
+    '<button type="button" class="car-btn next" data-a="car" data-v="1" aria-label="Próxima foto">'+I.next+'</button>'+
+    '<div class="car-dots" aria-hidden="true">'+m.fotos.map(function(f, i){ return '<span'+(i===0?' class="on"':'')+'></span>'; }).join('')+'</div></div>';
+  }
+  function redes(m){
+    var h = '<div class="redes"><a class="rede" href="'+(m.igUrl||'https://www.instagram.com/')+'" target="_blank" rel="noopener" title="Instagram '+esc(m.ig)+(m.igUrl?'':' (exemplo)')+'">'+I.ig+esc(m.ig)+'</a>'+
+      '<a class="rede" href="https://wa.me/" target="_blank" rel="noopener" title="WhatsApp (exemplo)">'+I.wa+'WhatsApp</a>';
+    if (m.x) h += '<a class="rede" href="'+m.x[2]+'" target="_blank" rel="noopener" title="'+m.x[1]+' (exemplo)">'+I[m.x[0]]+m.x[1]+'</a>';
+    return h + '</div>';
+  }
+  function ordenar(l){
+    return l.slice().sort(function(a,b){
+      if (S.ord === 'nota') return b.nota - a.nota;
+      if (S.ord === 'preco') return a.num - b.num;
+      return a.dist - b.dist;
+    });
+  }
+  function busca(){
+    var termos = norm(S.q).split(/\s+/).filter(function(t){ return t.length > 1; });
+    if (!termos.length) return { termos:0, lista: ordenar(MEIS).slice(0,5) };
+    var lista = MEIS.filter(function(m){
+      var tx = norm(m.nome+' '+m.area+' '+m.bairro+' '+m.chaves);
+      return termos.every(function(t){ return tx.indexOf(t) >= 0; });
+    });
+    return { termos: termos.length, lista: ordenar(lista) };
+  }
+  function achados(){
+    var pal = norm(S.desc).split(/[^a-z0-9]+/).filter(function(t){ return t.length > 3; });
+    return ordenar(MEIS.filter(function(m){
+      var ch = norm(m.chaves).split(' ');
+      return pal.some(function(p){ return ch.some(function(c){ return c.length > 3 && (p.indexOf(c) === 0 || c.indexOf(p) === 0); }); });
+    }));
+  }
+  function faixa(l){
+    if (!l.length) return '';
+    var n = l.map(function(m){ return m.num; });
+    var a = Math.min.apply(null,n), b = Math.max.apply(null,n);
+    return a === b ? rs(a) : rs(a) + ' a ' + rs(b);
+  }
+
+  function av(m, size){ size = size || 48; return '<span class="av" style="width:'+size+'px;height:'+size+'px;background:'+m.cor+';font-size:'+Math.round(size/2.8)+'px">'+m.ini+'</span>'; }
+  function ordChips(label){
+    var ops = [['nota','Melhor avaliados'],['preco','Menor preço'],['dist','Mais perto']];
+    return '<div class="chips" role="group" aria-label="'+label+'"><span class="lab">Ordenar:</span>' + ops.map(function(o){
+      return '<button type="button" class="chip" data-a="ord" data-v="'+o[0]+'" aria-pressed="'+(S.ord===o[0])+'">'+o[1]+'</button>';
+    }).join('') + '</div>';
+  }
+  function meiCard(m){
+    return '<div class="card">'+carrossel(m)+'<div class="row">'+av(m)+'<div class="grow"><span class="t15">'+esc(m.nome)+'</span>'+
+      '<span class="t13">'+esc(m.area)+' · '+esc(m.bairro)+' · '+br(m.dist)+' km</span>'+
+      '<span class="ok">'+I.shield+'Verificado · nota '+br(m.nota)+' · a partir de '+rs(m.num)+'</span></div>'+
+      '<button type="button" class="icon-btn" style="border:1px solid var(--field-line);border-radius:22px" data-a="chat" data-v="'+m.id+'|home" aria-label="Conversar com '+esc(m.nome)+'">'+I.chat+'</button></div>'+redes(m)+'</div>';
+  }
+  function listaHTML(){
+    var r = busca();
+    var h = '';
+    if (!r.lista.length) h = '<div class="card" style="border-style:dashed"><span class="t13">Nenhum MEI encontrado com esse termo. Faça um pedido e avisamos quem puder atender.</span></div>';
+    return h + r.lista.map(meiCard).join('');
+  }
+  function tituloLista(){
+    var r = busca();
+    return r.termos ? r.lista.length + (r.lista.length === 1 ? ' resultado' : ' resultados') + ' para “' + esc(S.q.trim()) + '”' : 'MEIs criativos perto de você';
+  }
+  function previaHTML(){
+    var a = achados();
+    var areas = []; a.forEach(function(m){ if (areas.indexOf(m.area) < 0) areas.push(m.area); });
+    var t = a.length ? a.length + (a.length > 1 ? ' MEIs podem atender este pedido' : ' MEI pode atender este pedido') : 'Descreva o serviço para ver quem pode atender';
+    return '<div class="'+(a.length?'okbox':'card')+'" style="display:flex;flex-direction:column;gap:10px;color:var(--ink)"><span class="t15">'+t+'</span>'+
+      (a.length ? '<div class="row" style="gap:6px">'+a.slice(0,5).map(function(m){ return av(m,34); }).join('')+'<span class="t12">'+esc(areas.slice(0,2).join(', '))+'</span></div>' : '')+'</div>';
+  }
+
+  var TITULOS = {notif:'Notificações',pedido:'Novo pedido',propostas:'Quem pode atender',combinado:'Combinado',avaliar:'Avaliação',pedidos:'Pedidos',mensagens:'Mensagens',perfil:'Meu perfil',publicacoes:'Publicações',suporte:'Ajuda e suporte'};
+  var VOLTAR = {suporte:'home',notif:'home',pedido:'home',propostas:'pedidos',combinado:'chat',avaliar:'combinado'};
+  var TAB = {home:'home',notif:'home',pedido:'pedidos',propostas:'pedidos',pedidos:'pedidos',combinado:'pedidos',avaliar:'pedidos',chat:'mensagens',mensagens:'mensagens',perfil:'perfil',publicacoes:'publicacoes',suporte:'home'};
+
+  function header(){
+    var sc = S.screen;
+    if (S.modo === 'cad') return '<div class="hdr"><span class="mark hm" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 40 40"><path d="M7 9v22M7 20h14" stroke="#99E885" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M27 21v10" stroke="#FB7945" stroke-width="7" stroke-linecap="round"/><path d="M27 4c-3.3 0-6 2.6-6 5.8 0 4.2 6 9.2 6 9.2s6-5 6-9.2C33 6.6 30.3 4 27 4z" fill="#FB7945"/><circle cx="27" cy="9.7" r="2.2" fill="#FFFFFF"/></svg></span><span class="logo" aria-label="HelpMEI">Help<b>ME<span class="li">ı<svg class="pin" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z" fill="#FB7945"/><circle cx="12" cy="11.4" r="4.4" fill="#FFFFFF"/></svg></span></b></span><span class="t13" style="padding-right:8px">Passo '+S.cad+' de 3</span></div>';
+    if (sc === 'home') return '<div class="hdr"><span class="mark hm" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 40 40"><path d="M7 9v22M7 20h14" stroke="#99E885" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M27 21v10" stroke="#FB7945" stroke-width="7" stroke-linecap="round"/><path d="M27 4c-3.3 0-6 2.6-6 5.8 0 4.2 6 9.2 6 9.2s6-5 6-9.2C33 6.6 30.3 4 27 4z" fill="#FB7945"/><circle cx="27" cy="9.7" r="2.2" fill="#FFFFFF"/></svg></span><span class="logo" aria-label="HelpMEI">Help<b>ME<span class="li">ı<svg class="pin" viewBox="0 0 24 30" aria-hidden="true"><path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z" fill="#FB7945"/><circle cx="12" cy="11.4" r="4.4" fill="#FFFFFF"/></svg></span></b></span><button type="button" class="icon-btn" data-a="go" data-v="notif" aria-label="Notificações, 2 novas">'+I.bell+'<span class="dot" aria-hidden="true">2</span></button></div>';
+    if (sc === 'chat') { var m = byId[S.chosen]; return '<div class="hdr"><button type="button" class="icon-btn" data-a="go" data-v="'+S.from+'" aria-label="Voltar">'+I.back+'</button>'+av(m,36)+'<div class="grow" style="margin-left:4px"><span class="t15">'+esc(m.nome)+'</span><span class="ok">CNPJ verificado · '+esc(m.area)+'</span></div></div>'; }
+    return '<div class="hdr" style="'+(VOLTAR[sc]?'':'padding-left:16px')+'">'+(VOLTAR[sc]?'<button type="button" class="icon-btn" data-a="go" data-v="'+VOLTAR[sc]+'" aria-label="Voltar">'+I.back+'</button>':'')+'<h2>'+TITULOS[sc]+'</h2></div>';
+  }
+
+  function telaHome(){
+    return (S.toast ? '<div class="okbox row" style="gap:8px">'+I.check+'Avaliação enviada. A reputação de vocês dois foi atualizada.</div>' : '')+
+    '<div style="display:flex;flex-direction:column;gap:4px"><span class="big" style="font-size:22px">'+(EU.pessoa ? 'Olá, '+esc(EU.pessoa) : 'Olá!')+'</span><span class="t13">'+esc(EU.negocio)+' · colares e pulseiras artesanais · Porto Alegre</span></div>'+
+    '<div class="hero"><span class="big">Precisa de uma ajuda?</span><span class="muted">Descreva o que precisa e veja na hora quais MEIs criativos perto de você podem atender.</span><button type="button" class="btn" data-a="go" data-v="pedido">Fazer pedido</button></div>'+
+    '<button type="button" class="soft row" style="border:none;text-align:left;flex-direction:row" data-a="paravoce"><span class="av" style="width:40px;height:40px;background:var(--hero)">'+I.spark+'</span><span class="grow"><span class="t15">1 pedido combina com você</span><span class="t13">Loja Colaborativa Vitrine Sul procura colares artesanais</span></span>'+I.chev+'</button>'+
+    '<div class="field"><label for="busca">Buscar MEIs criativos</label><div class="search">'+I.search+'<input id="busca" type="search" autocomplete="off" placeholder="Ex.: fotografia, ilustração, estúdio" value="'+esc(S.q)+'"></div></div>'+
+    '<span class="t15" id="tituloLista" style="font-size:16px">'+tituloLista()+'</span>'+ordChips('Ordenar resultados')+
+    '<div id="lista" style="display:flex;flex-direction:column;gap:12px">'+listaHTML()+'</div>';
+  }
+  function telaNotif(){
+    var a = achados().length;
+    var ns = [
+      ['Novo pedido combina com você','Loja Colaborativa Vitrine Sul procura colares e pulseiras artesanais para o fim de ano.','Agora','paravoce',true],
+      ['MEIs prontos para o seu pedido','Ensaio fotográfico da coleção: '+a+' MEIs podem atender.','Há 12 min','go:propostas',true],
+      ['Seu perfil está no ar','Suas peças já aparecem para MEIs da sua região. Veja como ficou.','Ontem','go:perfil',false]
+    ];
+    return '<span class="t13">O helpMEI avisa quando um pedido combina com o que você oferece e quando alguém responde ao seu.</span>'+ns.map(function(n){
+      var p = n[3].split(':');
+      return '<button type="button" class="card" style="text-align:left;flex-direction:row;align-items:flex-start" data-a="'+p[0]+'" data-v="'+(p[1]||'')+'"><span style="width:10px;height:10px;border-radius:5px;margin-top:6px;flex-shrink:0;background:'+(n[4]?'var(--accent)':'var(--disabled)')+'"></span><span class="grow"><span class="t15" style="font-size:14px">'+n[0]+'</span><span class="t13">'+n[1]+'</span><span class="t12">'+n[2]+'</span></span></button>';
+    }).join('');
+  }
+  function telaPedido(){
+    return '<div class="field"><label for="desc">O que você precisa?</label><textarea id="desc" rows="4">'+esc(S.desc)+'</textarea><span class="t12">Escreva com suas palavras. O helpMEI entende o pedido pelo texto, sem categorias.</span>'+
+      '<button type="button" class="row" style="align-self:flex-start;height:40px;padding:0 12px;border-radius:10px;border:1px dashed var(--disabled);background:transparent;font-size:13px;font-weight:600;gap:6px">'+I.mic+'Prefere falar? Grave um áudio</button></div>'+
+      '<div id="previa">'+previaHTML()+'</div>'+
+      '<div class="row" style="gap:10px;align-items:stretch"><div class="field" style="flex:1"><label for="prazo">Prazo</label><input class="input" id="prazo" value="Até 20/11"></div><div class="field" style="flex:1"><label for="orc">Orçamento</label><input class="input" id="orc" value="Até R$ 700"></div></div>'+
+      '<button type="button" class="btn" style="height:52px" data-a="go" data-v="propostas">Enviar pedido</button>';
+  }
+  function telaPropostas(){
+    var a = achados();
+    var h = '<div class="card" style="gap:6px"><span class="ok" style="font-weight:700">Pedido enviado</span><span class="t15" style="font-weight:600;line-height:1.4">'+esc(S.desc)+'</span></div>';
+    if (!a.length) return h + '<div class="card" style="border-style:dashed"><span class="t15">Ainda não há MEIs para este pedido</span><span class="t13">Seu pedido fica aberto e avisamos assim que alguém compatível entrar no helpMEI.</span></div>';
+    return h + '<div class="hero" style="padding:16px;gap:4px"><span class="big">'+a.length+(a.length>1?' MEIs podem atender':' MEI pode atender')+'</span><span class="muted" style="font-size:13px">Todos já foram avisados. Converse com quem preferir.</span></div>'+
+      '<div class="soft"><span class="lbl">Preço de referência</span><span class="big">'+faixa(a)+'</span><span class="t13">Valores que esses MEIs costumam cobrar por este tipo de serviço.</span></div>'+
+      ordChips('Ordenar MEIs')+a.map(function(m){
+        return '<div class="card">'+carrossel(m)+'<div class="row">'+av(m,44)+'<div class="grow"><span class="t15">'+esc(m.nome)+'</span><span class="ok">'+esc(m.area)+' · nota '+br(m.nota)+' · '+br(m.dist)+' km</span></div><div style="display:flex;flex-direction:column;align-items:flex-end"><span class="t12">a partir de</span><span class="t15" style="font-size:17px">'+rs(m.num)+'</span></div></div>'+
+        '<span class="t13" style="font-size:14px">'+esc(m.msg)+'</span>'+redes(m)+'<button type="button" class="btn-o" data-a="chat" data-v="'+m.id+'|propostas">Conversar</button></div>';
+      }).join('');
+  }
+  function telaChat(){
+    var m = byId[S.chosen];
+    var ms = [[0,'Oi! '+m.msg],[1,'Oi! Gostei. Consegue me mostrar trabalhos parecidos com o que eu preciso?'],[0,'Claro, estão no meu portfólio aqui no perfil. Te mando os mais próximos da sua proposta.']];
+    if (S.extra) ms.push([1,'Fechado então! Pode ser dia 18?'],[0,'Pode sim. Fecha o combinado aí que eu confirmo.']);
+    return ms.map(function(x){ return '<div class="bubble '+(x[0]?'me':'them')+'">'+esc(x[1])+'</div>'; }).join('');
+  }
+  function telaCombinado(){
+    var m = byId[S.chosen], e = S.etapa;
+    function chk(on, quem, txt){
+      return '<div class="check'+(on?' on':'')+'"><span class="box" aria-hidden="true">'+I.check+'</span><span class="grow"><span class="t15" style="font-size:14px">'+quem+'</span><span class="t12">'+txt+'</span></span></div>';
+    }
+    var acao;
+    if (e === 0) acao = '<button type="button" class="btn" style="height:52px" data-a="etapa" data-v="1">Confirmar o combinado</button>';
+    else if (e === 1) acao = '<div class="soft"><span class="lbl">Falta só '+esc(m.primeiro)+'</span><span class="t13">Avisamos '+esc(m.primeiro)+' para dar o check. Quando os dois confirmarem, o combinado fecha.</span></div><button type="button" class="btn-o" style="height:52px;font-size:15px" data-a="etapa" data-v="2">Simular: '+esc(m.primeiro)+' confirma</button>';
+    else acao = '<div class="okbox row" style="align-items:flex-start;gap:10px">'+I.check+'<span class="grow"><span class="t15">Combinado fechado</span><span style="font-size:13px;font-weight:500">Os dois confirmaram e foram avisados. A avaliação está liberada para você e para '+esc(m.primeiro)+'.</span></span></div><button type="button" class="btn" style="height:52px" data-a="avaliar">Avaliar '+esc(m.primeiro)+'</button>';
+    return '<div class="card" style="padding:18px;gap:14px"><span class="t13">Resumo do que foi acertado. Fica registrado para os dois.</span>'+
+      '<div class="kv"><span>Serviço</span><span>'+esc(S.desc)+'</span></div><div class="kv"><span>Prestador</span><span>'+esc(m.nome)+'</span></div>'+
+      '<div class="row" style="gap:16px;align-items:flex-start"><div class="kv" style="flex:1"><span>Valor combinado</span><span class="big">'+rs(m.num)+'</span></div><div class="kv" style="flex:1"><span>Data</span><span>18/11</span></div></div></div>'+
+      '<div class="card" style="gap:8px"><span class="t15" style="font-size:14px">Confirmação dos dois lados</span>'+
+      chk(e >= 1, 'Você', e >= 1 ? 'Confirmou o combinado' : 'Aguardando seu check')+
+      chk(e >= 2, esc(m.nome), e >= 2 ? 'Confirmou o combinado' : 'Aguardando o check')+'</div>'+acao+
+      '<span class="t12" style="text-align:center;line-height:1.5">O helpMEI não intermedeia pagamentos: vocês acertam o pagamento diretamente. A avaliação abre para os dois quando o combinado fecha.</span>';
+  }
+  function telaAvaliar(){
+    var m = byId[S.chosen], st = '';
+    if (S.etapa < 2) return '<div class="card" style="border-style:dashed"><span class="t15">Avaliação bloqueada</span><span class="t13">Ela abre quando os dois confirmarem o combinado.</span></div><button type="button" class="btn-o" data-a="go" data-v="combinado">Ver andamento do pedido</button>';
+    for (var n=1;n<=5;n++) st += '<button type="button" class="star'+(n<=S.rating?' on':'')+'" data-a="star" data-v="'+n+'" aria-label="'+n+(n>1?' estrelas':' estrela')+'" aria-pressed="'+(n<=S.rating)+'">'+I.star.replace('<svg','<svg fill="'+(n<=S.rating?'currentColor':'none')+'"')+'</button>';
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:8px">'+av(m,64)+'<span class="big" style="text-align:center">Como foi trabalhar com '+esc(m.primeiro)+'?</span></div>'+
+      '<div class="row" style="justify-content:center;gap:4px">'+st+'</div>'+
+      '<div class="field"><label for="coment">Comentário (opcional)</label><textarea id="coment" rows="3">Entregou no prazo e entendeu a proposta da coleção.</textarea></div>'+
+      '<span class="t13" style="text-align:center">'+esc(m.primeiro)+' também pode avaliar você. As duas avaliações aparecem nos perfis.</span>'+
+      '<button type="button" class="btn" style="height:52px" data-a="enviarav" '+(S.rating?'':'disabled')+'>Enviar avaliação</button>';
+  }
+  function telaPedidos(){
+    var a = achados();
+    var seg = '<div class="seg" role="tablist" aria-label="Tipo de pedido"><button type="button" role="tab" aria-selected="'+(S.pedTab==='meus')+'" data-a="tab" data-v="meus">Meus pedidos</button><button type="button" role="tab" aria-selected="'+(S.pedTab==='voce')+'" data-a="tab" data-v="voce">Para você</button></div>';
+    if (S.pedTab === 'meus') {
+      var ps = [
+        [['Em negociação','Aguardando o check de '+byId[S.chosen].primeiro,'Combinado fechado'][Math.min(S.etapa,2)],S.etapa===2?'var(--ok-soft)':'var(--accent-soft)',S.etapa===2?'var(--ok-ink)':'var(--accent-ink)','Ensaio fotográfico da nova coleção',S.etapa===0?a.length+' MEIs podem atender · '+(faixa(a)||'sem faixa ainda'):byId[S.chosen].nome+' · '+rs(byId[S.chosen].num),'go',S.etapa===0?'propostas':'combinado'],
+        ['Concluído','var(--ok-soft)','var(--ok-ink)','Estampa exclusiva para camisetas','Caio Ilustra · avaliado com 5 estrelas','',''],
+        ['Aguardando resposta','var(--chip-off)','var(--ink)','Etiquetas kraft com a marca do ateliê','Enviado há 2 horas · Ateliê Kraft visualizou','','']
+      ];
+      return seg + ps.map(function(p){ return '<button type="button" class="card" style="text-align:left;gap:6px" data-a="'+p[5]+'" data-v="'+p[6]+'"><span class="status" style="background:'+p[1]+';color:'+p[2]+'">'+p[0]+'</span><span class="t15">'+p[3]+'</span><span class="t13">'+p[4]+'</span></button>'; }).join('');
+    }
+    return seg + '<span class="t13">Pedidos de outros MEIs que combinam com o que você oferece: colares e pulseiras artesanais.</span>'+
+      '<div class="card"><div class="row"><span class="av" style="width:44px;height:44px;background:#B45309">VS</span><div class="grow"><span class="t15">Loja Colaborativa Vitrine Sul</span><span class="ok">CNPJ verificado · 4,2 km</span></div></div>'+
+      '<span class="t13" style="font-size:14px">Procuro 20 colares e 20 pulseiras artesanais, em cores variadas, para revender na loja no fim de ano.</span><span class="t13">Prazo: até 10/12 · Orçamento: a combinar</span>'+
+      (S.propOk ? '<div class="okbox">Proposta enviada. Você será avisada quando a loja responder.</div>'
+        : '<div class="row" style="gap:8px;align-items:stretch"><div class="field" style="flex:1"><label for="vp">Seu valor</label><input class="input" id="vp" value="R$ 1.400"></div><div class="field" style="flex:1"><label for="pp">Prazo</label><input class="input" id="pp" value="20 dias"></div></div><button type="button" class="btn" data-a="prop">Enviar proposta</button>')+'</div>';
+  }
+  function telaPublicacoes(){
+    var lista = MEIS.slice().sort(function(a, b){ return (b.nota - a.nota) || (b.qtd - a.qtd); });
+    var minha = '<article class="card" style="gap:10px"><div class="row"><span class="av" style="width:40px;height:40px;background:var(--hero)">'+iniciais(EU.negocio)+'</span><div class="grow"><span class="t15">Sua publicação</span><span class="t12">'+esc(EU.negocio)+' · agora</span></div></div>'+carrossel(ANA, true)+
+      '<span class="t13" style="font-size:14px;color:var(--ink)">Colares e pulseiras em elos de contas coloridas. Peças únicas e encomendas por cor.</span>'+redes(ANA)+'</article>';
+    return minha + '<div class="soft" style="flex-direction:row;align-items:center;gap:10px"><span class="t13" style="color:var(--ink)">Os MEIs mais bem avaliados aparecem primeiro. Boas avaliações dão mais visibilidade.</span></div>'+
+      lista.map(function(m, i){
+        var liked = !!S.curtidas[m.id], n = 20 + m.qtd * 3 + (liked ? 1 : 0);
+        return '<article class="card" style="padding:0;overflow:hidden;gap:0">'+
+          '<div class="row" style="padding:12px 14px">'+av(m,40)+'<div class="grow"><span class="t15">'+esc(m.nome)+'</span><span class="t12">'+esc(m.area)+' · '+esc(m.bairro)+'</span></div>'+
+          '<span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span class="t15" style="font-size:14px">★ '+br(m.nota)+'</span><span class="t12">'+m.qtd+' avaliações</span></span></div>'+
+          (i < 3 ? '<span class="badge" style="margin:0 14px 10px">Entre os mais bem avaliados</span>' : '')+
+          '<div style="padding:0 14px">'+carrossel(m)+'</div>'+
+          '<div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px"><span class="t13" style="font-size:14px;color:var(--ink)">'+esc(m.fotos[0][1])+'. '+esc(m.msg)+'</span>'+
+          '<div class="row" style="gap:8px"><button type="button" class="chip" data-a="curtir" data-v="'+m.id+'" aria-pressed="'+liked+'" style="display:flex;align-items:center;gap:6px">'+I.heart+n+'</button>'+
+          '<button type="button" class="btn-o" style="flex:1;height:40px;font-size:14px" data-a="chat" data-v="'+m.id+'|publicacoes">Conversar</button></div></div></article>';
+      }).join('');
+  }
+  function telaSuporte(){
+    var faq = [
+      ['Como funciona o combinado?','Depois de conversar, os dois confirmam o combinado com um check. Quando as duas confirmações acontecem, o combinado fecha e a avaliação abre para os dois.'],
+      ['O helpMEI cuida do pagamento?','Não. O helpMEI conecta os MEIs e registra o combinado, mas o pagamento é acertado diretamente entre vocês, do jeito que preferirem.'],
+      ['Como sei que o MEI é confiável?','Todo perfil mostra se o CNPJ está ativo, a nota e quantas avaliações recebeu. As avaliações só podem ser feitas depois de um combinado fechado.'],
+      ['Ainda não tenho CNPJ. Posso usar?','Pode criar um perfil em formalização. Mostramos o caminho para abrir o MEI pelo Portal do Empreendedor, com apoio do Sebrae.'],
+      ['Como denuncio um perfil ou um problema?','Use o botão Relatar um problema aqui embaixo. A equipe analisa e responde pelo seu WhatsApp.']
+    ];
+    return '<div class="hero" style="gap:8px"><span class="big">Como podemos ajudar?</span><span class="muted">Veja as dúvidas mais comuns ou fale com a nossa equipe.</span></div>'+
+      faq.map(function(f){ return '<details class="faq"><summary>'+f[0]+'</summary><p>'+f[1]+'</p></details>'; }).join('')+
+      (S.suporteOk ? '<div class="okbox">Mensagem enviada. O suporte responde pelo seu WhatsApp em até 1 dia útil.</div>'
+        : '<button type="button" class="btn" data-a="suporte">Falar com o suporte</button><button type="button" class="btn-o" data-a="suporte">Relatar um problema</button>');
+  }
+  function telaMensagens(){
+    return [['lucas','Te mando os mais próximos da sua proposta.','10:42'],['marina','Levo fundo e iluminação para o ensaio.','10:31'],['caio','Arquivo da estampa enviado!','Ontem']].map(function(c){
+      var m = byId[c[0]];
+      return '<button type="button" class="card row" style="text-align:left;flex-direction:row" data-a="chat" data-v="'+m.id+'|mensagens">'+av(m,46)+'<span class="grow"><span class="t15">'+esc(m.nome)+'</span><span class="t13" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c[1]+'</span></span><span class="t12">'+c[2]+'</span></button>';
+    }).join('');
+  }
+  function telaPerfil(){
+    return '<div class="card" style="align-items:center;text-align:center;padding:18px;gap:12px"><span class="av" style="width:72px;height:72px;background:var(--hero);font-size:24px">'+iniciais(EU.negocio)+'</span>'+
+      '<div style="display:flex;flex-direction:column;gap:4px"><span class="big">'+esc(EU.negocio)+'</span><span class="t13">Colares e pulseiras artesanais · Porto Alegre</span></div>'+
+      '<span class="ok" style="font-size:13px;background:var(--ok-soft);padding:6px 10px;border-radius:8px">'+I.shield+'MEI ativo · CNPJ verificado</span>'+
+      '<span class="t13">Perfil novo: as avaliações aparecem aqui depois do primeiro combinado fechado.</span></div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px"><span class="t15" style="font-size:14px">Ofereço</span><span class="t13" style="font-size:14px">Colares e pulseiras artesanais em elos de contas coloridas, peças únicas e encomendas por cor.</span><span class="t15" style="font-size:14px;margin-top:6px">Procuro</span><span class="t13" style="font-size:14px">Fotografia de produto, social media e embalagens para as peças.</span></div>'+
+      '<div style="display:flex;flex-direction:column;gap:8px"><span class="t15" style="font-size:14px">Minhas peças e redes</span>'+carrossel(ANA, true)+redes(ANA)+'</div>'+
+      '<div class="card row" style="flex-direction:row;padding:16px;gap:14px">'+I.qr+'<div class="grow" style="gap:8px"><span class="t15">QR code do seu perfil</span><span class="t13">Coloque na banca da feira, na etiqueta das peças ou no cartão.</span></div></div>'+
+      '<div class="hero" style="gap:10px"><span style="font-size:13px;font-weight:700;color:#FDBA8C">helpMEI Pro</span><span class="big" style="font-size:18px">Apareça primeiro nas buscas</span><span class="muted" style="font-size:13px">Destaque no match, portfólio maior e pedidos novos antes de todo mundo. O contato continua gratuito.</span>'+
+      (S.pro ? '<span class="okbox">Teste grátis do Pro ativado (simulação).</span>' : '<button type="button" class="btn" data-a="pro">Conhecer o Pro</button>')+'</div>';
+  }
+  function telaCadastro(){
+    if (S.cad === 1) return '<div style="display:flex;flex-direction:column;gap:8px;padding-top:8px"><span class="big" style="font-size:26px;line-height:1.15">Cadastro em 2 minutos</span><span class="t13" style="font-size:15px;line-height:1.5">Informe o CNPJ do seu MEI. A gente busca seus dados públicos e verifica se ele está ativo.</span></div>'+
+      '<div class="field"><label for="cnpj">CNPJ</label><input class="input" id="cnpj" inputmode="numeric" value="00.000.000/0001-00" style="height:52px;font-size:18px"><span class="t12">Número ilustrativo para a demonstração.</span></div>'+
+      '<button type="button" class="btn" style="height:52px" data-a="cad" data-v="2">Buscar meus dados</button>'+
+      (S.semCnpj ? '<div class="card"><span class="t15">Vamos te ajudar a se formalizar</span><span class="t13">Abrir um MEI é gratuito pelo Portal do Empreendedor, e o Sebrae e a Sala do Empreendedor de Porto Alegre ajudam no processo. Você pode criar um perfil “em formalização” enquanto isso.</span><a href="https://www.gov.br/empresas-e-negocios/pt-br/empreendedor" target="_blank" rel="noopener" style="color:var(--brand);font-weight:700;font-size:14px">Ir para o Portal do Empreendedor</a></div>'
+        : '<button type="button" class="link" data-a="semcnpj">Ainda não tenho CNPJ</button>')+
+      '<div class="card" style="background:var(--chip-off);border:none;flex-direction:row"><span class="t12" style="line-height:1.5;color:var(--ink)">Usamos só os dados públicos do CNPJ e o que você informar. Nada é compartilhado sem a sua permissão.</span></div>';
+    if (S.cad === 2) return '<div style="display:flex;flex-direction:column;gap:6px"><span class="big" style="font-size:24px">Encontramos seu MEI</span><span class="t13">Confira os dados e complete o que falta.</span></div>'+
+      '<div class="card" style="gap:12px"><span class="ok" style="font-size:13px;font-weight:700;background:var(--ok-soft);padding:6px 10px;border-radius:8px;align-self:flex-start">'+I.shield+'Situação: ativa</span><div class="kv"><span>Nome empresarial</span><span>Dados do CNPJ (exemplo)</span></div><div class="kv"><span>Atividade principal</span><span>Fabricação de bijuterias e artefatos semelhantes (exemplo)</span></div><div class="kv"><span>Localização</span><span>Porto Alegre/RS</span></div></div>'+
+      '<div class="field"><label for="fant">Nome que aparece no perfil</label><input class="input" id="fant" value="'+esc(EU.negocio)+'"></div>'+
+      '<div class="field"><label for="ofe">O que você oferece? Escreva com suas palavras</label><textarea id="ofe" rows="2">Colares e pulseiras artesanais em elos de contas coloridas.</textarea></div>'+
+      '<div class="field"><label for="pro2">E o que você costuma procurar?</label><textarea id="pro2" rows="2">Fotografia de produto, social media e embalagens.</textarea></div>'+
+      '<button type="button" class="btn" style="height:52px" data-a="cad" data-v="3">Criar meu perfil</button>';
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center"><span class="av" style="width:80px;height:80px;background:var(--ok-soft);color:var(--ok-ink)">'+I.check+'</span><span class="big" style="font-size:26px">Perfil criado</span><span class="t13" style="font-size:15px;line-height:1.5">Seu perfil já tem o selo de CNPJ verificado. Encontramos MEIs criativos perto de você que oferecem o que você procura.</span>'+
+      '<button type="button" class="btn" style="width:100%;height:52px" data-a="modo" data-v="app">Entrar no HelpMEI</button><button type="button" class="link" style="color:var(--muted)" data-a="cad" data-v="1">Refazer cadastro</button></div>';
+  }
+
+  function nav(){
+    var t = TAB[S.screen];
+    return '<nav class="nav" aria-label="Navegação principal">'+[['home','Início',I.home],['publicacoes','Publicações',I.feed],['pedidos','Pedidos',I.list],['mensagens','Mensagens',I.msg],['perfil','Perfil',I.user]].map(function(x){
+      return '<button type="button" data-a="go" data-v="'+x[0]+'"'+(t===x[0]?' aria-current="page"':'')+'>'+x[2]+x[1]+'</button>';
+    }).join('')+'</nav>';
+  }
+
+  var phone = document.getElementById('phone');
+  function render(keepScroll){
+    var main = phone.querySelector('.main'), top = keepScroll && main ? main.scrollTop : 0;
+    var html = header();
+    if (S.modo === 'cad') { html += '<div class="main">'+telaCadastro()+'</div>'; }
+    else {
+      var fn = {home:telaHome,notif:telaNotif,pedido:telaPedido,propostas:telaPropostas,chat:telaChat,combinado:telaCombinado,avaliar:telaAvaliar,pedidos:telaPedidos,mensagens:telaMensagens,perfil:telaPerfil,publicacoes:telaPublicacoes,suporte:telaSuporte}[S.screen];
+      html += '<div class="main">'+fn()+'</div>';
+      if (S.screen === 'chat') html += '<div class="chatbar"><button type="button" class="btn" data-a="go" data-v="combinado">Fechar combinado</button><div class="row" style="gap:8px"><label for="msgin" class="sr">Mensagem</label><input class="input" id="msgin" readonly style="flex:1;border-radius:22px;background:var(--app)" value="'+(S.extra?'':'Fechado então! Pode ser dia 18?')+'"><button type="button" class="icon-btn" style="background:var(--hero);color:var(--on-hero);border-radius:22px" data-a="msg" aria-label="Enviar mensagem">'+I.send+'</button></div></div>';
+      if (S.screen !== 'chat' && S.screen !== 'suporte') html += '<button type="button" class="fab" data-a="go" data-v="suporte" aria-label="Ajuda e suporte">'+I.help+'Ajuda</button>';
+      html += nav();
+    }
+    phone.innerHTML = html;
+    var m2 = phone.querySelector('.main'); if (m2) m2.scrollTop = top;
+    document.querySelectorAll('.switch button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.v === S.modo)); });
+  }
+
+  function act(a, v){
+    var keep = false;
+    if (a === 'go') { S.screen = v; S.toast = false; if (v === 'suporte') S.suporteOk = false; }
+    else if (a === 'modo') { S.modo = v; if (v === 'app') S.screen = 'home'; }
+    else if (a === 'chat') { var p = v.split('|'); S.chosen = p[0]; S.from = p[1]; S.screen = 'chat'; S.extra = false; S.etapa = 0; S.rating = 0; S.toast = false; }
+    else if (a === 'ord') { S.ord = v; keep = true; }
+    else if (a === 'paravoce') { S.screen = 'pedidos'; S.pedTab = 'voce'; S.toast = false; }
+    else if (a === 'tab') { S.pedTab = v; }
+    else if (a === 'prop') { S.propOk = true; keep = true; }
+    else if (a === 'pro') { S.pro = true; keep = true; }
+    else if (a === 'msg') { S.extra = true; }
+    else if (a === 'etapa') { S.etapa = Number(v); keep = true; }
+    else if (a === 'curtir') { S.curtidas[v] = !S.curtidas[v]; keep = true; }
+    else if (a === 'suporte') { S.suporteOk = true; keep = true; }
+    else if (a === 'avaliar') { if (S.etapa < 2) return; S.screen = 'avaliar'; S.rating = 0; }
+    else if (a === 'star') { S.rating = Number(v); keep = true; }
+    else if (a === 'enviarav') { S.screen = 'home'; S.toast = true; }
+    else if (a === 'cad') { S.cad = Number(v); if (v === '1') S.semCnpj = false; }
+    else if (a === 'semcnpj') { S.semCnpj = true; keep = true; }
+    else return;
+    render(keep);
+    if (a === 'msg') { var mm = phone.querySelector('.main'); if (mm) mm.scrollTop = mm.scrollHeight; }
+  }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-a]');
+    if (!b || !b.dataset.a) return;
+    if (b.dataset.a === 'car') {
+      var tr = b.closest('.car').querySelector('.car-track');
+      var w = tr.clientWidth, n = tr.children.length, i = Math.round(tr.scrollLeft / w) + Number(b.dataset.v);
+      if (i < 0) i = n - 1; if (i >= n) i = 0;
+      tr.scrollTo({ left: i * w, behavior: 'smooth' });
+      return;
+    }
+    act(b.dataset.a, b.dataset.v || '');
+  });
+  phone.addEventListener('input', function(e){
+    if (e.target.id === 'busca') {
+      S.q = e.target.value;
+      document.getElementById('lista').innerHTML = listaHTML();
+      document.getElementById('tituloLista').innerHTML = tituloLista();
+    } else if (e.target.id === 'desc') {
+      S.desc = e.target.value;
+      document.getElementById('previa').innerHTML = previaHTML();
+    }
+  });
+
+  phone.addEventListener('scroll', function(e){
+    var tr = e.target;
+    if (!tr.classList || !tr.classList.contains('car-track')) return;
+    var i = Math.round(tr.scrollLeft / tr.clientWidth);
+    var dots = tr.parentNode.querySelectorAll('.car-dots span');
+    dots.forEach(function(d, k){ d.classList.toggle('on', k === i); });
+  }, true);
+
+  render(false);
+})();
+</script>
+</body>
+</html>
